@@ -1,0 +1,6 @@
+{
+  "name": "FysiSteps",
+  "description": "Take Action. Earn Rewards. Save the Planet. Real-time environmental impact tracking and verified community actions.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

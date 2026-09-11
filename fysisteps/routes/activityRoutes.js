@@ -1,0 +1,7 @@
+
+const r=require("express").Router(),c=require("../controllers/activityController"),auth=require("../middleware/auth"),{optionalAuth}=require("../middleware/auth"),multer=require("multer"),path=require("path"),fs=require("fs");
+const dir=path.join(__dirname,"../uploads");fs.mkdirSync(dir,{recursive:true});
+const storage=multer.diskStorage({destination:dir,filename:(req,file,cb)=>cb(null,Date.now()+"-"+Math.random().toString(36).slice(2)+path.extname(file.originalname).toLowerCase())});
+const allowed=/^image\//;const video=/^video\//;
+const upload=multer({storage,fileFilter:(req,file,cb)=>{if(file.fieldname!=="video"&& !allowed.test(file.mimetype))return cb(new Error("Only standard image files (JPG, PNG, WEBP, GIF, etc.) are allowed"));if(file.fieldname==="video"&&!video.test(file.mimetype))return cb(new Error("Only standard video files (MP4, WebM, MOV, etc.) are allowed"));cb(null,true)},limits:{fileSize:100*1024*1024}});
+r.get("/cooldown-status",auth,c.cooldownStatus);r.get("/",c.list);r.get("/user/:userId",c.byUser);r.get("/:id",c.byId);r.post("/",auth,upload.fields([{name:"beforeImage",maxCount:1},{name:"afterImage",maxCount:1},{name:"video",maxCount:1}]),c.create);r.post("/:id/like",optionalAuth,c.like);r.post("/:id/comment",optionalAuth,c.comment);r.post("/:id/comments",optionalAuth,c.comment);r.post("/:id/report-fake",optionalAuth,c.reportFake);r.delete("/:id",auth,c.remove);module.exports=r;
