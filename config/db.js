@@ -9,9 +9,9 @@ async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
   if (!uri) {
-    const msg = '[FysiSteps] MONGODB_URI is not set. Please configure MONGODB_URI in your .env file to connect to MongoDB Atlas.';
+    const errorMsg = 'MONGODB_URI is not set in environment or .env file. Please configure MONGODB_URI to connect to MongoDB Atlas.';
     console.warn('\n==================================================================');
-    console.warn('⚠️  ' + msg);
+    console.warn('⚠️  [FysiSteps Database Warning] ' + errorMsg);
     console.warn('==================================================================\n');
     isConnected = false;
     return false;
@@ -25,7 +25,7 @@ async function connectDB() {
 
     isConnected = true;
     console.log(`✓ [FysiSteps] MongoDB Atlas connected: ${conn.connection.host || 'Cluster'}/${conn.connection.name || 'fysisteps'}`);
-    return true;
+    return conn;
   } catch (err) {
     isConnected = false;
     const errorMsg = `Failed to connect to MongoDB Atlas (${err.message}). Please verify credentials and Network Access IP Whitelist in MongoDB Atlas.`;

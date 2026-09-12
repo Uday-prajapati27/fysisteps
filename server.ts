@@ -23,19 +23,21 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // 1. Establish database connection before starting services
-  console.log("[FysiSteps] Initializing database layer...");
+  // 1. Establish authoritative MongoDB connection before starting Express listener
+  console.log("[FysiSteps] Initializing authoritative MongoDB connection...");
   try {
-    const mongoConnected = await connectDB();
-    if (mongoConnected && isMongoConnected()) {
-      console.log("✓ [FysiSteps] MongoDB Atlas connected. Operating in persistent database mode.");
+    const mongoConn = await connectDB();
+    if (mongoConn && isMongoConnected()) {
+      console.log("✓ [FysiSteps] MongoDB connection established successfully.");
     } else {
-      console.warn("⚠️  [FysiSteps] MONGODB_URI not configured. Please supply MONGODB_URI in your .env file.");
+      console.warn("⚠️  [FysiSteps] Server started in standby mode: MONGODB_URI not configured. API requests requiring database persistence will return 503 until MONGODB_URI is configured.");
     }
   } catch (dbErr: any) {
-    console.error("🚨 [FysiSteps] Fatal Database Error on startup:", dbErr.message);
-    if (process.env.NODE_ENV === "production" || process.env.MONGODB_URI) {
-      console.error("Exiting process due to database connection failure when MONGODB_URI was configured.");
+    console.error("\n==================================================================");
+    console.error("🚨 [FysiSteps Database Connection Error]:", dbErr.message);
+    console.error("==================================================================\n");
+    if (process.env.NODE_ENV === "production" && process.env.MONGODB_URI) {
+      console.error("Exiting process due to database connection failure in production.");
       process.exit(1);
     }
   }
@@ -55,13 +57,29 @@ async function startServer() {
 
   // ── API ROUTES ──────────────────────────────────────────
   app.get("/api/health", (req, res) => {
+    if (!isMongoConnected()) {
+      return res.status(503).json({
+        success: false,
+        database: "disconnected",
+        message: "Database connection unavailable. Please configure MONGODB_URI."
+      });
+    }
     res.json({
-      status: "ok",
-      service: "FysiSteps API",
-      database: isMongoConnected() ? "connected" : "disconnected",
-      mongoConfigured: Boolean(process.env.MONGODB_URI),
-      environment: process.env.NODE_ENV || "development"
+      success: true,
+      database: "mongodb"
     });
+  });
+
+  // Database availability gate for all other /api endpoints
+  app.use("/api", (req, res, next) => {
+    if (!isMongoConnected()) {
+      return res.status(503).json({
+        success: false,
+        database: "disconnected",
+        message: "MongoDB Atlas is not connected. Please configure MONGODB_URI in your environment or .env file to enable API operations."
+      });
+    }
+    next();
   });
 
   // Auth Routes
