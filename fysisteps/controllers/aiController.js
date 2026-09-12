@@ -1,5 +1,5 @@
 const { scanItemWithDeepLearning, verifyTransformationWithDeepLearning, calculateMLForecast } = require("../services/aiVisionService");
-const { store } = require("../config/store");
+const { User, Activity } = require("../models");
 
 async function scanItem(req, res) {
   try {
@@ -41,25 +41,23 @@ async function verifyActivityAI(req, res) {
   }
 }
 
-function getMLForecast(req, res) {
+async function getMLForecast(req, res) {
   try {
     const userId = req.userId;
-    const u = store.users.find(x => String(x._id) === String(userId));
-    
-    // Count real user activities
-    const userActs = store.activities.filter(a => {
-      const actUserId = typeof a.user === "object" && a.user !== null ? String(a.user._id || "") : String(a.user || "");
-      return actUserId === String(userId);
-    });
+
+    const [u, userActsCount] = await Promise.all([
+      User.findById(userId).lean(),
+      Activity.countDocuments({ user: String(userId), hidden: { $ne: true } })
+    ]);
 
     const forecast = calculateMLForecast({
-      activitiesCount: userActs.length || u?.verifiedActivities || 0,
+      activitiesCount: userActsCount || u?.verifiedActivities || 0,
       currentPoints: u?.points || 0,
       treesCount: u?.impact?.trees || 0,
       wasteKg: u?.impact?.wasteKg || 0
     });
 
-    res.json({ success: true, data: forecast });
+    return res.json({ success: true, data: forecast });
   } catch (err) {
     console.error("ML Forecast Error:", err);
     res.status(500).json({ success: false, message: "Failed to generate ML forecast" });

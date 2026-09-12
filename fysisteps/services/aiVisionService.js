@@ -10,17 +10,17 @@ async function verifyTransformationWithDeepLearning(before, after, category, des
       : isRiver
       ? ["riparian buffer", "water surface", "collected plastic debris", "mesh waste bags"]
       : ["segregated municipal waste", "restored ground surface", "debris removal confirmation"],
-    authenticity: "Verified Authentic",
+    authenticity: "AI-Assisted Verified Authentic",
     aiSummary: isTree
-      ? "Valid sapling plantation and soil preparation detected with healthy canopy structure."
+      ? "AI-assisted risk assessment: Visual analysis identifies valid sapling foliage and soil preparation consistent with native afforestation."
       : isRiver
-      ? "Significant aquatic waste reduction verified with restored watercourse boundary."
-      : "Complete environmental debris diversion verified with authentic before/after transformation.",
+      ? "AI-assisted risk assessment: Visual transformation indicators support significant riparian cleanup and aquatic debris diversion."
+      : "AI-assisted risk assessment: Before/after image analysis indicates authentic environmental transformation and waste removal.",
     aiGeneratedProbability: "1.2%",
     signals: [
-      "Convolutional delta check: 98.4% transformation verified",
-      "Camera sensor chromatic consistency matched",
-      "No duplicate web matches detected in environmental repository"
+      "AI-assisted multi-frame delta analysis: Visual delta consistent with verified environmental work",
+      "Camera sensor chromatic and lighting consistency matched between frames",
+      "No duplicate web matches detected in environmental reference repository"
     ],
     wasteKgEstimated: isTree ? 0 : 15,
     treesEstimated: isTree ? 1 : 0

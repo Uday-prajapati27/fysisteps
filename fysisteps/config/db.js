@@ -1,20 +1,54 @@
+const mongoose = require('mongoose');
 
-const mongoose = require("mongoose");
-mongoose.set("bufferCommands", false);
+// Fail fast on disconnected operations rather than buffering commands indefinitely
+mongoose.set('bufferCommands', false);
+
+let isConnected = false;
 
 async function connectDB() {
   const uri = process.env.MONGODB_URI;
-  if (!uri || uri.includes("127.0.0.1:27017") || uri.includes("localhost:27017")) {
-    console.log("Using persistent local real-data store (data.json).");
+
+  if (!uri) {
+    const errorMsg = 'MONGODB_URI is not set in environment or .env file. Please configure MONGODB_URI to connect to MongoDB Atlas.';
+    console.warn('\n==================================================================');
+    console.warn('⚠️  [FysiSteps Database Warning] ' + errorMsg);
+    console.warn('==================================================================\n');
+    isConnected = false;
     return false;
   }
+
   try {
-    await mongoose.connect(uri, { serverSelectionTimeoutMS: 1500 });
-    console.log("MongoDB connected.");
-    return true;
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000,
+      autoIndex: true
+    });
+
+    isConnected = true;
+    console.log(`✓ [FysiSteps] MongoDB Atlas connected: ${conn.connection.host || 'Cluster'}/${conn.connection.name || 'fysisteps'}`);
+    return conn;
   } catch (err) {
-    console.warn("MongoDB unavailable — falling back to persistent local real-data store (data.json).");
-    return false;
+    isConnected = false;
+    const errorMsg = `Failed to connect to MongoDB Atlas (${err.message}). Please verify credentials and Network Access IP Whitelist in MongoDB Atlas.`;
+    console.error('\n==================================================================');
+    console.error('🚨 [FysiSteps Database Error] ' + errorMsg);
+    console.error('==================================================================\n');
+    throw new Error(errorMsg);
   }
 }
-module.exports = connectDB;
+
+function isMongoConnected() {
+  return isConnected && mongoose.connection.readyState === 1;
+}
+
+async function closeDB() {
+  if (isConnected || mongoose.connection.readyState !== 0) {
+    await mongoose.connection.close();
+    isConnected = false;
+  }
+}
+
+module.exports = {
+  connectDB,
+  isMongoConnected,
+  closeDB
+};

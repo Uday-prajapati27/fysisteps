@@ -1,6 +1,15 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "fysisteps-local-secret-change-me";
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("FATAL: JWT_SECRET environment variable is required in production.");
+    }
+    return "fysisteps-local-secret-change-me";
+  }
+  return secret;
+}
 
 function auth(req, res, next) {
   const header = req.headers.authorization;
@@ -10,7 +19,7 @@ function auth(req, res, next) {
 
   const token = header.split(" ")[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     req.userId = decoded.id;
     next();
   } catch (err) {
@@ -23,7 +32,7 @@ function optionalAuth(req, res, next) {
   if (header && header.startsWith("Bearer ")) {
     const token = header.split(" ")[1];
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const decoded = jwt.verify(token, getJwtSecret());
       req.userId = decoded.id;
     } catch {
       req.userId = null;
@@ -36,5 +45,6 @@ function optionalAuth(req, res, next) {
 
 auth.auth = auth;
 auth.optionalAuth = optionalAuth;
+auth.getJwtSecret = getJwtSecret;
 
 module.exports = auth;
