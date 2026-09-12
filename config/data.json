@@ -1,0 +1,494 @@
+{
+  "users": [
+    {
+      "_id": "55682431-d4b9-4921-a56d-af0b4ecf141f",
+      "name": "Aarav Mehta",
+      "username": "aarav_mehta",
+      "email": "aarav@demo.greensteps",
+      "password": "$2b$10$J2iwgwhVEWelrdzt/YuSf.5nLG2ULowkcTVf6PXOth0piUoryrUL6",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=Aarav%20Mehta&backgroundColor=2f7d32&textColor=ffffff",
+      "bio": "Active environmental protector & GreenSteps community leader. 🌍",
+      "points": 420,
+      "verifiedActivities": 8,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 12,
+        "wasteKg": 18,
+        "waterLitres": 450
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:16:09.555Z",
+      "isDemo": true
+    },
+    {
+      "_id": "473578f6-4914-4f62-998c-719b48455205",
+      "name": "Priya Sharma",
+      "username": "priya_sharma",
+      "email": "priya@demo.greensteps",
+      "password": "$2b$10$J2iwgwhVEWelrdzt/YuSf.5nLG2ULowkcTVf6PXOth0piUoryrUL6",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=Priya%20Sharma&backgroundColor=2f7d32&textColor=ffffff",
+      "bio": "Active environmental protector & GreenSteps community leader. 🌍",
+      "points": 360,
+      "verifiedActivities": 7,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 9,
+        "wasteKg": 14,
+        "waterLitres": 380
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:16:09.555Z",
+      "isDemo": true
+    },
+    {
+      "_id": "94227a11-9957-44bf-892b-c670824291f0",
+      "name": "Rahul Verma",
+      "username": "rahul_verma",
+      "email": "rahul@demo.greensteps",
+      "password": "$2b$10$J2iwgwhVEWelrdzt/YuSf.5nLG2ULowkcTVf6PXOth0piUoryrUL6",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=Rahul%20Verma&backgroundColor=2f7d32&textColor=ffffff",
+      "bio": "Active environmental protector & GreenSteps community leader. 🌍",
+      "points": 290,
+      "verifiedActivities": 6,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 7,
+        "wasteKg": 11,
+        "waterLitres": 260
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:16:09.555Z",
+      "isDemo": true
+    },
+    {
+      "_id": "0d501e47-7184-4d8b-af39-762af1d5d079",
+      "name": "Aditi Singh",
+      "username": "aditi_singh",
+      "email": "aditi@demo.greensteps",
+      "password": "$2b$10$J2iwgwhVEWelrdzt/YuSf.5nLG2ULowkcTVf6PXOth0piUoryrUL6",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=Aditi%20Singh&backgroundColor=2f7d32&textColor=ffffff",
+      "bio": "Active environmental protector & GreenSteps community leader. 🌍",
+      "points": 210,
+      "verifiedActivities": 5,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 5,
+        "wasteKg": 8,
+        "waterLitres": 220
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:16:09.555Z",
+      "isDemo": true
+    },
+    {
+      "_id": "8cad9006-a229-44f3-b380-89c044612e06",
+      "name": "Green Warrior",
+      "username": "green_warrior_99",
+      "email": "warrior99@planet.eco",
+      "emailVerified": false,
+      "phone": "",
+      "phoneVerified": false,
+      "password": "$2b$10$qUlKGk0mepNSrja9myaOcOVBT0Z.oPBgrMD/qQ9Bs08yBneZTHWLG",
+      "avatar": "",
+      "bio": "",
+      "points": 50,
+      "verifiedActivities": 1,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 1,
+        "wasteKg": 0,
+        "waterLitres": 0
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:21:36.451Z",
+      "isDemo": false,
+      "activities": 1
+    },
+    {
+      "_id": "2b3b6735-c7ac-4411-a010-c7ee195c04e8",
+      "name": "Tanishka Gupta",
+      "username": "tanishka123",
+      "email": "tanishkagupta7819@gmail.com",
+      "emailVerified": true,
+      "phone": "",
+      "phoneVerified": false,
+      "password": "$2b$10$Jfve1rxt9MlJITLKrAYYWOlAU.VzSIUgW2ZUdRw43aJC7saIgbRCK",
+      "avatar": "",
+      "bio": "",
+      "points": 50,
+      "verifiedActivities": 1,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 0,
+        "wasteKg": 15,
+        "waterLitres": 0,
+        "cleanups": 1
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:23:14.242Z",
+      "isDemo": false,
+      "activities": 1
+    },
+    {
+      "_id": "7eee20e3-b1b5-4adb-a129-d2a36d6c2ba7",
+      "name": "Eco Hero",
+      "username": "eco.hero!#$",
+      "email": "hero_test@example.com",
+      "emailVerified": false,
+      "phone": "",
+      "phoneVerified": false,
+      "password": "$2b$10$d.VWaJh2x.Oq9rh9NinzfOr2q0M.Eqjrl5LYpKkiVY3EnHMX02Gga",
+      "avatar": "",
+      "bio": "",
+      "points": 0,
+      "verifiedActivities": 0,
+      "followers": [],
+      "following": [],
+      "impact": {
+        "trees": 0,
+        "wasteKg": 0,
+        "waterLitres": 0
+      },
+      "organizations": [],
+      "createdAt": "2026-09-11T06:47:25.643Z",
+      "isDemo": false
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act_priya_cleanup_01",
+      "user": "473578f6-4914-4f62-998c-719b48455205",
+      "userName": "Priya Sharma",
+      "username": "priya_sharma",
+      "category": "cleanup",
+      "title": "Versova Coastal Cleanup Drive",
+      "description": "Organized a weekend community cleanup drive at Versova Beach. Cleared 120kg of microplastics and discarded fishing nets before high tide.",
+      "beforeImage": "https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=1000&q=80",
+      "afterImage": "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1000&q=80",
+      "video": "",
+      "latitude": 19.1316,
+      "longitude": 72.8139,
+      "locationName": "Versova Beach, Mumbai",
+      "locationAccuracy": 12,
+      "submittedAt": "2026-09-10T12:16:09.555Z",
+      "createdAt": "2026-09-10T12:16:09.555Z",
+      "verificationStatus": "verified",
+      "verificationScore": 98,
+      "verificationSignals": [
+        "High GPS fidelity",
+        "Computer Vision delta verified",
+        "Debris cleared confirmed"
+      ],
+      "aiVerification": {
+        "score": 97,
+        "detectedObjects": [
+          "coastal sand",
+          "ocean debris",
+          "recycled bags"
+        ],
+        "authenticity": "Verified Authentic",
+        "aiSummary": "Significant environmental transformation verified with pristine beach state."
+      },
+      "pointsAwarded": 50,
+      "impactMetrics": {
+        "trees": 0,
+        "cleanups": 1,
+        "wasteKg": 120,
+        "waterLitres": 0
+      },
+      "likes": 14,
+      "likedBy": [],
+      "comments": [
+        {
+          "id": "c_01",
+          "userId": "94227a11-9957-44bf-892b-c670824291f0",
+          "user": "Rahul Verma",
+          "username": "rahul_verma",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=Rahul+Verma&backgroundColor=2f7d32&textColor=ffffff",
+          "text": "Incredible work on the beach! The shoreline looks completely restored.",
+          "createdAt": "2026-09-10T18:16:09.555Z"
+        }
+      ],
+      "isDemo": false
+    },
+    {
+      "_id": "act_rahul_trees_02",
+      "user": "94227a11-9957-44bf-892b-c670824291f0",
+      "userName": "Rahul Verma",
+      "username": "rahul_verma",
+      "category": "tree_plantation",
+      "title": "Native Neem & Peepal Afforestation",
+      "description": "Planted 15 indigenous saplings along the riverbank green belt to prevent soil erosion and improve biodiversity.",
+      "beforeImage": "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?auto=format&fit=crop&w=1000&q=80",
+      "afterImage": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80",
+      "video": "",
+      "latitude": 29.9457,
+      "longitude": 78.1642,
+      "locationName": "Ganga Riverfront, Haridwar",
+      "locationAccuracy": 8,
+      "submittedAt": "2026-09-09T18:16:09.555Z",
+      "createdAt": "2026-09-09T18:16:09.555Z",
+      "verificationStatus": "verified",
+      "verificationScore": 95,
+      "verificationSignals": [
+        "GPS Coordinates Validated",
+        "Sapling species identified"
+      ],
+      "aiVerification": {
+        "score": 95,
+        "detectedObjects": [
+          "sapling",
+          "fresh soil",
+          "protective tree guards"
+        ],
+        "authenticity": "Verified Authentic",
+        "aiSummary": "Native tree plantation verified with tree guards installed."
+      },
+      "pointsAwarded": 50,
+      "impactMetrics": {
+        "trees": 15,
+        "cleanups": 0,
+        "wasteKg": 0,
+        "waterLitres": 0
+      },
+      "likes": 22,
+      "likedBy": [],
+      "comments": [
+        {
+          "id": "c_02",
+          "userId": "0d501e47-7184-4d8b-af39-762af1d5d079",
+          "user": "Aditi Singh",
+          "username": "aditi_singh",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=Aditi+Singh&backgroundColor=2f7d32&textColor=ffffff",
+          "text": "Neem trees are so vital for local biodiversity! Wonderful initiative.",
+          "createdAt": "2026-09-10T06:16:09.555Z"
+        }
+      ],
+      "isDemo": false
+    },
+    {
+      "_id": "act_aditi_waste_03",
+      "user": "0d501e47-7184-4d8b-af39-762af1d5d079",
+      "userName": "Aditi Singh",
+      "username": "aditi_singh",
+      "category": "waste_management",
+      "title": "Community Compost Pit Setup",
+      "description": "Set up dual wet waste segregation bins and aerobic composting for 24 households in Lodhi Colony, diverting 45kg organic waste weekly.",
+      "beforeImage": "https://images.unsplash.com/photo-1528190336454-13cd56b45b5a?auto=format&fit=crop&w=1000&q=80",
+      "afterImage": "https://images.unsplash.com/photo-1584467735815-f778f274e296?auto=format&fit=crop&w=1000&q=80",
+      "video": "",
+      "latitude": 28.5916,
+      "longitude": 77.2274,
+      "locationName": "Lodhi Colony, New Delhi",
+      "locationAccuracy": 10,
+      "submittedAt": "2026-09-09T06:16:09.555Z",
+      "createdAt": "2026-09-09T06:16:09.555Z",
+      "verificationStatus": "verified",
+      "verificationScore": 96,
+      "verificationSignals": [
+        "Community compost system active",
+        "Organic waste diversion confirmed"
+      ],
+      "aiVerification": {
+        "score": 96,
+        "detectedObjects": [
+          "compost bin",
+          "organic mulch",
+          "segregation labels"
+        ],
+        "authenticity": "Verified Authentic",
+        "aiSummary": "Compost setup verified with organic waste actively cycling."
+      },
+      "pointsAwarded": 50,
+      "impactMetrics": {
+        "trees": 0,
+        "cleanups": 0,
+        "wasteKg": 45,
+        "waterLitres": 0
+      },
+      "likes": 19,
+      "likedBy": [],
+      "comments": [],
+      "isDemo": false
+    },
+    {
+      "_id": "2ef82fce-6af1-44d2-8c19-f9a6299f281a",
+      "user": "8cad9006-a229-44f3-b380-89c044612e06",
+      "userName": "Green Warrior",
+      "username": "green_warrior_99",
+      "category": "tree",
+      "title": "Neighborhood Tree Planting Drive",
+      "description": "Planted 5 native neem trees along the residential street.",
+      "beforeImage": "/uploads/1789107702434-9s1cxbgmpwf.jpg",
+      "afterImage": "/uploads/1789107702436-iqmjshwkv0b.jpg",
+      "video": "",
+      "latitude": 28.5916,
+      "longitude": 77.2197,
+      "locationName": "Lodhi Colony, Delhi",
+      "submittedAt": "2026-09-11T06:21:42.440Z",
+      "createdAt": "2026-09-11T06:21:42.440Z",
+      "verificationStatus": "verified",
+      "verificationScore": 94,
+      "verificationSignals": [
+        "Before/After dual photographic proof validated",
+        "High-fidelity GPS telemetry geotag matched",
+        "Descriptive environmental context verified",
+        "Convolutional delta check: 98.4% transformation verified",
+        "Camera sensor chromatic consistency matched",
+        "No duplicate web matches detected in environmental repository"
+      ],
+      "aiVerification": {
+        "score": 94,
+        "detectedObjects": [
+          "sapling foliage",
+          "moist soil bed",
+          "root flare",
+          "protective stake"
+        ],
+        "authenticity": "Verified Authentic",
+        "aiSummary": "Valid sapling plantation and soil preparation detected with healthy canopy structure.",
+        "aiGeneratedProbability": "1.2%"
+      },
+      "pointsAwarded": 50,
+      "impactMetrics": {
+        "trees": 1,
+        "cleanups": 0,
+        "wasteKg": 0,
+        "waterLitres": 0
+      },
+      "likes": 0,
+      "likedBy": [],
+      "comments": [],
+      "isDemo": false
+    },
+    {
+      "_id": "306e8caf-4a50-44d9-9472-6c5bb820a7f0",
+      "user": "2b3b6735-c7ac-4411-a010-c7ee195c04e8",
+      "userName": "Tanishka Gupta",
+      "username": "tanishka123",
+      "category": "garbage",
+      "title": "Cleaning",
+      "description": "Cleaning the roads of Haridwar",
+      "beforeImage": "/uploads/1789107939470-qxxj5xpm6uc.png",
+      "afterImage": "/uploads/1789107939473-zg3xmqdho1.png",
+      "video": "/uploads/1789107939474-9d76w8d6ht.mp4",
+      "latitude": 28.5916,
+      "longitude": 77.2197,
+      "locationName": "Haridwar",
+      "locationAccuracy": 15,
+      "submittedAt": "2026-09-11T06:25:39.630Z",
+      "createdAt": "2026-09-11T06:25:39.630Z",
+      "verificationStatus": "verified",
+      "verificationScore": 99,
+      "verificationSignals": [
+        "Before/After dual photographic proof validated",
+        "Action video proof verified with temporal consistency",
+        "High-fidelity GPS telemetry geotag matched",
+        "Descriptive environmental context verified",
+        "Convolutional delta check: 98.4% transformation verified",
+        "Camera sensor chromatic consistency matched",
+        "No duplicate web matches detected in environmental repository"
+      ],
+      "aiVerification": {
+        "score": 98,
+        "detectedObjects": [
+          "segregated municipal waste",
+          "restored ground surface",
+          "debris removal confirmation"
+        ],
+        "authenticity": "Verified Authentic",
+        "aiSummary": "Complete environmental debris diversion verified with authentic before/after transformation.",
+        "aiGeneratedProbability": "1.2%"
+      },
+      "pointsAwarded": 50,
+      "impactMetrics": {
+        "trees": 0,
+        "cleanups": 1,
+        "wasteKg": 15,
+        "waterLitres": 0
+      },
+      "likes": 1,
+      "likedBy": [
+        "2b3b6735-c7ac-4411-a010-c7ee195c04e8"
+      ],
+      "comments": [],
+      "isDemo": false
+    }
+  ],
+  "events": [],
+  "rewards": [
+    {
+      "_id": "8eff215d-4d5d-47fa-99b0-c6aa9187573f",
+      "title": "15% Off Eco Products & Reusables",
+      "description": "Redeem for instant savings on organic, plastic-free living essentials.",
+      "cost": 300,
+      "icon": "🌱",
+      "partnerName": "EcoStore India",
+      "codePrefix": "GREEN",
+      "isDemo": true
+    },
+    {
+      "_id": "03089257-4322-4abe-90aa-3bca02b3d0f3",
+      "title": "Verified Tree Plantation Certificate",
+      "description": "Digital & physical verified certificate with GPS plot tracking for your planted tree.",
+      "cost": 250,
+      "icon": "🌳",
+      "partnerName": "GreenSteps Foundation",
+      "codePrefix": "GREEN",
+      "isDemo": true
+    },
+    {
+      "_id": "9169dca9-bdd2-4d0c-aa34-f56fdecccf58",
+      "title": "Free Public Bike Pass — 1 Day",
+      "description": "Access eco-friendly smart public bicycles in participating metro cities.",
+      "cost": 200,
+      "icon": "🚲",
+      "partnerName": "Smart City Mobility",
+      "codePrefix": "GREEN",
+      "isDemo": true
+    }
+  ],
+  "organizations": [
+    {
+      "_id": "ac3a851d-4971-4cc2-b2ce-e9b4206777fa",
+      "name": "EcoWarriors India",
+      "description": "Community-led cleanup and tree plantation initiatives across India.",
+      "location": "New Delhi, India",
+      "icon": "🌿",
+      "type": "Non-Profit NGO",
+      "members": 286,
+      "website": "https://greensteps.eco",
+      "isDemo": true
+    },
+    {
+      "_id": "68be3745-9877-455d-948e-9ae50d41add2",
+      "name": "Green Roots Foundation",
+      "description": "Urban forestry, Miyawaki forests, and native tree restoration programs.",
+      "location": "Pune, Maharashtra",
+      "icon": "🌳",
+      "type": "Environmental Foundation",
+      "members": 346,
+      "website": "https://greensteps.eco",
+      "isDemo": true
+    },
+    {
+      "_id": "fca3b4ed-f5f3-454b-a872-bf4e42262cb5",
+      "name": "River Guardians Collective",
+      "description": "Water conservation, lake revival, and riverbank restoration campaigns.",
+      "location": "Haridwar, Uttarakhand",
+      "icon": "💧",
+      "type": "Grassroots Movement",
+      "members": 389,
+      "website": "https://greensteps.eco",
+      "isDemo": true
+    }
+  ],
+  "redemptions": [],
+  "orders": []
+}
