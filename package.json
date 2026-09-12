@@ -8,7 +8,7 @@
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
-    "seed": "node seed.js",
+    "seed": "node scripts/seed.js",
     "migrate:data": "node scripts/migrateData.js"
   },
   "dependencies": {
