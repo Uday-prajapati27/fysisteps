@@ -9,7 +9,10 @@ async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
   if (!uri) {
-    console.log('[DEV/LOCAL MODE] MONGODB_URI is not set. Operating in local development mode using config/data.json fallback.');
+    const msg = '[FysiSteps] MONGODB_URI is not set. Please configure MONGODB_URI in your .env file to connect to MongoDB Atlas.';
+    console.warn('\n==================================================================');
+    console.warn('⚠️  ' + msg);
+    console.warn('==================================================================\n');
     isConnected = false;
     return false;
   }
@@ -21,17 +24,15 @@ async function connectDB() {
     });
 
     isConnected = true;
-    console.log(`MongoDB connected successfully: ${conn.connection.host || 'Atlas Cluster'}`);
+    console.log(`✓ [FysiSteps] MongoDB Atlas connected: ${conn.connection.host || 'Cluster'}/${conn.connection.name || 'fysisteps'}`);
     return true;
   } catch (err) {
     isConnected = false;
-    console.error(`MongoDB connection failed: ${err.message}`);
-    // If in production, fail hard
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(`Critical: Failed to connect to MongoDB Atlas in production: ${err.message}`);
-    }
-    console.warn('[DEV/LOCAL MODE] Falling back to local JSON store due to connection failure during development.');
-    return false;
+    const errorMsg = `Failed to connect to MongoDB Atlas (${err.message}). Please verify credentials and Network Access IP Whitelist in MongoDB Atlas.`;
+    console.error('\n==================================================================');
+    console.error('🚨 [FysiSteps Database Error] ' + errorMsg);
+    console.error('==================================================================\n');
+    throw new Error(errorMsg);
   }
 }
 
@@ -40,7 +41,7 @@ function isMongoConnected() {
 }
 
 async function closeDB() {
-  if (isConnected) {
+  if (isConnected || mongoose.connection.readyState !== 0) {
     await mongoose.connection.close();
     isConnected = false;
   }

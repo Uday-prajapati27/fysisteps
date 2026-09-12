@@ -1,7 +1,5 @@
 const { randomUUID } = require("crypto");
-const { isMongoConnected } = require("../config/db");
 const { Organization, Reward } = require("../models");
-const { store, saveStore } = require("../config/store");
 
 function authorized(req) {
   const key = process.env.ADMIN_API_KEY;
@@ -24,37 +22,18 @@ async function createOrganization(req, res) {
       return res.status(400).json({ success: false, message: "name and description are required" });
     }
 
-    if (isMongoConnected()) {
-      const org = await Organization.create({
-        _id: randomUUID(),
-        name: String(name).trim(),
-        description: String(description).trim(),
-        icon,
-        website,
-        location,
-        type,
-        members: 0,
-        isDemo: false
-      });
-      return res.status(201).json({ success: true, data: org.toObject() });
-    } else {
-      const org = {
-        _id: randomUUID(),
-        name: String(name).trim(),
-        description: String(description).trim(),
-        icon,
-        website,
-        location,
-        type,
-        members: 0,
-        impact: {},
-        verified: true,
-        createdAt: new Date()
-      };
-      store.organizations.push(org);
-      saveStore();
-      return res.status(201).json({ success: true, data: org });
-    }
+    const org = await Organization.create({
+      _id: randomUUID(),
+      name: String(name).trim(),
+      description: String(description).trim(),
+      icon,
+      website,
+      location,
+      type,
+      members: 0,
+      isDemo: false
+    });
+    return res.status(201).json({ success: true, data: org.toObject() });
   } catch (err) {
     console.error("createOrganization error:", err);
     res.status(500).json({ success: false, message: "Failed to create organization" });
@@ -73,36 +52,20 @@ async function createReward(req, res) {
       return res.status(400).json({ success: false, message: "cost must be a positive number" });
     }
 
-    if (isMongoConnected()) {
-      const reward = await Reward.create({
-        _id: randomUUID(),
-        title: String(title).trim(),
-        description: String(description).trim(),
-        cost: numericCost,
-        icon,
-        partnerName,
-        codePrefix: "GREEN",
-        isDemo: false
-      });
-      return res.status(201).json({ success: true, data: reward.toObject() });
-    } else {
-      const reward = {
-        _id: randomUUID(),
-        title: String(title).trim(),
-        description: String(description).trim(),
-        cost: numericCost,
-        icon,
-        partnerName,
-        partnerWebsite,
-        terms,
-        expiresAt,
-        verified: true,
-        createdAt: new Date()
-      };
-      store.rewards.push(reward);
-      saveStore();
-      return res.status(201).json({ success: true, data: reward });
-    }
+    const reward = await Reward.create({
+      _id: randomUUID(),
+      title: String(title).trim(),
+      description: String(description).trim(),
+      cost: numericCost,
+      icon,
+      partnerName,
+      partnerWebsite,
+      terms,
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
+      codePrefix: "GREEN",
+      isDemo: false
+    });
+    return res.status(201).json({ success: true, data: reward.toObject() });
   } catch (err) {
     console.error("createReward error:", err);
     res.status(500).json({ success: false, message: "Failed to create reward" });
@@ -113,19 +76,9 @@ async function deleteOrganization(req, res) {
   if (!guard(req, res)) return;
   try {
     const orgId = req.params.id;
-    if (isMongoConnected()) {
-      const deleted = await Organization.findByIdAndDelete(orgId);
-      if (!deleted) return res.status(404).json({ success: false, message: "Organization not found" });
-      return res.json({ success: true, message: "Organization removed" });
-    } else {
-      const before = store.organizations.length;
-      store.organizations = store.organizations.filter(x => x._id !== orgId);
-      if (store.organizations.length === before) {
-        return res.status(404).json({ success: false, message: "Organization not found" });
-      }
-      saveStore();
-      return res.json({ success: true, message: "Organization removed" });
-    }
+    const deleted = await Organization.findByIdAndDelete(orgId);
+    if (!deleted) return res.status(404).json({ success: false, message: "Organization not found" });
+    return res.json({ success: true, message: "Organization removed" });
   } catch (err) {
     console.error("deleteOrganization error:", err);
     res.status(500).json({ success: false, message: "Failed to delete organization" });
@@ -136,19 +89,9 @@ async function deleteReward(req, res) {
   if (!guard(req, res)) return;
   try {
     const rewardId = req.params.id;
-    if (isMongoConnected()) {
-      const deleted = await Reward.findByIdAndDelete(rewardId);
-      if (!deleted) return res.status(404).json({ success: false, message: "Reward not found" });
-      return res.json({ success: true, message: "Reward removed" });
-    } else {
-      const before = store.rewards.length;
-      store.rewards = store.rewards.filter(x => x._id !== rewardId);
-      if (store.rewards.length === before) {
-        return res.status(404).json({ success: false, message: "Reward not found" });
-      }
-      saveStore();
-      return res.json({ success: true, message: "Reward removed" });
-    }
+    const deleted = await Reward.findByIdAndDelete(rewardId);
+    if (!deleted) return res.status(404).json({ success: false, message: "Reward not found" });
+    return res.json({ success: true, message: "Reward removed" });
   } catch (err) {
     console.error("deleteReward error:", err);
     res.status(500).json({ success: false, message: "Failed to delete reward" });

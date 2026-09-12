@@ -1,7 +1,5 @@
 const { scanItemWithDeepLearning, verifyTransformationWithDeepLearning, calculateMLForecast } = require("../services/aiVisionService");
-const { isMongoConnected } = require("../config/db");
 const { User, Activity } = require("../models");
-const { store } = require("../config/store");
 
 async function scanItem(req, res) {
   try {
@@ -47,36 +45,19 @@ async function getMLForecast(req, res) {
   try {
     const userId = req.userId;
 
-    if (isMongoConnected()) {
-      const [u, userActsCount] = await Promise.all([
-        User.findById(userId).lean(),
-        Activity.countDocuments({ user: String(userId), hidden: { $ne: true } })
-      ]);
+    const [u, userActsCount] = await Promise.all([
+      User.findById(userId).lean(),
+      Activity.countDocuments({ user: String(userId), hidden: { $ne: true } })
+    ]);
 
-      const forecast = calculateMLForecast({
-        activitiesCount: userActsCount || u?.verifiedActivities || 0,
-        currentPoints: u?.points || 0,
-        treesCount: u?.impact?.trees || 0,
-        wasteKg: u?.impact?.wasteKg || 0
-      });
+    const forecast = calculateMLForecast({
+      activitiesCount: userActsCount || u?.verifiedActivities || 0,
+      currentPoints: u?.points || 0,
+      treesCount: u?.impact?.trees || 0,
+      wasteKg: u?.impact?.wasteKg || 0
+    });
 
-      return res.json({ success: true, data: forecast });
-    } else {
-      const u = store.users.find(x => String(x._id) === String(userId));
-      const userActs = store.activities.filter(a => {
-        const actUserId = typeof a.user === "object" && a.user !== null ? String(a.user._id || "") : String(a.user || "");
-        return actUserId === String(userId);
-      });
-
-      const forecast = calculateMLForecast({
-        activitiesCount: userActs.length || u?.verifiedActivities || 0,
-        currentPoints: u?.points || 0,
-        treesCount: u?.impact?.trees || 0,
-        wasteKg: u?.impact?.wasteKg || 0
-      });
-
-      return res.json({ success: true, data: forecast });
-    }
+    return res.json({ success: true, data: forecast });
   } catch (err) {
     console.error("ML Forecast Error:", err);
     res.status(500).json({ success: false, message: "Failed to generate ML forecast" });

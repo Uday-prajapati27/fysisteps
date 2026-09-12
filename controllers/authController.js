@@ -1,9 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { randomUUID } = require("crypto");
-const { isMongoConnected } = require("../config/db");
 const { User } = require("../models");
-const { store, saveStore } = require("../config/store");
 const { getJwtSecret } = require("../middleware/auth");
 const msg91Service = require("../services/msg91Service");
 const twilioService = require("../services/twilioService");
@@ -27,7 +25,7 @@ function token(u) {
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const USERNAME_REGEX = /^[^\s]{2,40}$/;
 
-// In-memory OTP storage
+// In-memory OTP cache for verification lifecycle
 const emailOtps = new Map(); // email -> { otp, expiresAt }
 const phoneOtps = new Map(); // phone -> { otp, expiresAt }
 const verifiedEmails = new Set(); // set of emails verified via OTP
@@ -45,15 +43,8 @@ async function checkUsername(req, res) {
       return res.json({ success: true, available: false, message: "Username cannot contain spaces" });
     }
 
-    let taken = false;
-    if (isMongoConnected()) {
-      const existing = await User.findOne({ username: raw });
-      taken = !!existing;
-    } else {
-      taken = store.users.some(u => String(u.username || "").toLowerCase() === raw);
-    }
-
-    if (taken) {
+    const existing = await User.findOne({ username: raw });
+    if (existing) {
       return res.json({
         success: true,
         available: false,
@@ -99,83 +90,42 @@ async function register(req, res) {
     const isEmailVerified = Boolean(emailVerified || verifiedEmails.has(cleanEmail));
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (isMongoConnected()) {
-      // Check MongoDB
-      const [existingUsername, existingEmail] = await Promise.all([
-        User.findOne({ username: cleanUsername }),
-        User.findOne({ email: cleanEmail })
-      ]);
+    const [existingUsername, existingEmail] = await Promise.all([
+      User.findOne({ username: cleanUsername }),
+      User.findOne({ email: cleanEmail })
+    ]);
 
-      if (existingUsername) {
-        return res.status(409).json({
-          success: false,
-          message: `Username '@${cleanUsername}' already exists. Please choose another username.`
-        });
-      }
-      if (existingEmail) {
-        return res.status(409).json({ success: false, message: "An account with this email already exists" });
-      }
-
-      const newUser = await User.create({
-        _id: randomUUID(),
-        name: name.trim(),
-        username: cleanUsername,
-        email: cleanEmail,
-        emailVerified: isEmailVerified,
-        phone: cleanPhone,
-        phoneVerified: false,
-        password: hashedPassword,
-        avatar: "",
-        bio: "",
-        points: 0,
-        verifiedActivities: 0,
-        activities: 0,
-        impact: { trees: 0, cleanups: 0, wasteKg: 0, waterLitres: 0 },
-        organizations: [],
-        ecoCoins: 50,
-        isDemo: false
+    if (existingUsername) {
+      return res.status(409).json({
+        success: false,
+        message: `Username '@${cleanUsername}' already exists. Please choose another username.`
       });
-
-      return res.status(201).json({ success: true, data: { user: safe(newUser), token: token(newUser) } });
-    } else {
-      // Local fallback
-      const usernameTaken = store.users.some(u => String(u.username || "").toLowerCase() === cleanUsername);
-      if (usernameTaken) {
-        return res.status(409).json({
-          success: false,
-          message: `Username '@${cleanUsername}' already exists. Please choose another username.`
-        });
-      }
-      if (store.users.some(u => u.email === cleanEmail)) {
-        return res.status(409).json({ success: false, message: "An account with this email already exists" });
-      }
-
-      const u = {
-        _id: randomUUID(),
-        name: name.trim(),
-        username: cleanUsername,
-        email: cleanEmail,
-        emailVerified: isEmailVerified,
-        phone: cleanPhone,
-        phoneVerified: false,
-        password: hashedPassword,
-        avatar: "",
-        bio: "",
-        points: 0,
-        verifiedActivities: 0,
-        followers: [],
-        following: [],
-        impact: { trees: 0, cleanups: 0, wasteKg: 0, waterLitres: 0 },
-        organizations: [],
-        ecoCoins: 50,
-        createdAt: new Date(),
-        isDemo: false
-      };
-
-      store.users.push(u);
-      saveStore();
-      return res.status(201).json({ success: true, data: { user: safe(u), token: token(u) } });
     }
+    if (existingEmail) {
+      return res.status(409).json({ success: false, message: "An account with this email already exists" });
+    }
+
+    const newUser = await User.create({
+      _id: randomUUID(),
+      name: name.trim(),
+      username: cleanUsername,
+      email: cleanEmail,
+      emailVerified: isEmailVerified,
+      phone: cleanPhone,
+      phoneVerified: false,
+      password: hashedPassword,
+      avatar: "",
+      bio: "",
+      points: 0,
+      verifiedActivities: 0,
+      activities: 0,
+      impact: { trees: 0, cleanups: 0, wasteKg: 0, waterLitres: 0 },
+      organizations: [],
+      ecoCoins: 50,
+      isDemo: false
+    });
+
+    return res.status(201).json({ success: true, data: { user: safe(newUser), token: token(newUser) } });
   } catch (err) {
     console.error("Register error:", err);
     res.status(500).json({ success: false, message: "Registration failed. Please try again." });
@@ -191,25 +141,16 @@ async function login(req, res) {
       return res.status(400).json({ success: false, message: "Username/email and password are required" });
     }
 
-    let u = null;
-
-    if (isMongoConnected()) {
-      const cleanDigits = query.replace(/[^0-9]/g, "");
-      const searchCriteria = [
-        { email: query },
-        { username: query }
-      ];
-      if (cleanDigits.length >= 10) {
-        searchCriteria.push({ phone: { $regex: cleanDigits } });
-      }
-      u = await User.findOne({ $or: searchCriteria });
-    } else {
-      u = store.users.find(x =>
-        String(x.email || "").toLowerCase() === query ||
-        String(x.username || "").toLowerCase() === query ||
-        (x.phone && String(x.phone).replace(/[^0-9]/g, "") === query.replace(/[^0-9]/g, ""))
-      );
+    const cleanDigits = query.replace(/[^0-9]/g, "");
+    const searchCriteria = [
+      { email: query },
+      { username: query }
+    ];
+    if (cleanDigits.length >= 10) {
+      searchCriteria.push({ phone: { $regex: cleanDigits } });
     }
+
+    const u = await User.findOne({ $or: searchCriteria });
 
     if (!u || !(await bcrypt.compare(password || "", u.password))) {
       return res.status(401).json({ success: false, message: "Invalid credentials (check email/username and password)" });
@@ -242,32 +183,17 @@ async function loginWithOtp(req, res) {
       }
 
       const cleanDigits = rawPhone.replace(/[^0-9]/g, "");
-
-      if (isMongoConnected()) {
-        u = await User.findOne({ phone: { $regex: cleanDigits } });
-        if (!u) {
-          return res.status(404).json({
-            success: false,
-            message: "No account found with this phone number. Please create an account first.",
-            phoneVerified: true,
-            phone: rawPhone
-          });
-        }
-        u.phoneVerified = true;
-        await u.save();
-      } else {
-        u = store.users.find(x => x.phone && String(x.phone).replace(/[^0-9]/g, "") === cleanDigits);
-        if (!u) {
-          return res.status(404).json({
-            success: false,
-            message: "No account found with this phone number. Please create an account first.",
-            phoneVerified: true,
-            phone: rawPhone
-          });
-        }
-        u.phoneVerified = true;
-        saveStore();
+      u = await User.findOne({ phone: { $regex: cleanDigits } });
+      if (!u) {
+        return res.status(404).json({
+          success: false,
+          message: "No account found with this phone number. Please create an account first.",
+          phoneVerified: true,
+          phone: rawPhone
+        });
       }
+      u.phoneVerified = true;
+      await u.save();
     } else {
       const verifyRes = await twilioService.verifyEmailOtp({ email: cleanEmail, otp: inputOtp });
       if (!verifyRes.success) {
@@ -276,31 +202,17 @@ async function loginWithOtp(req, res) {
 
       verifiedEmails.add(cleanEmail);
 
-      if (isMongoConnected()) {
-        u = await User.findOne({ email: cleanEmail });
-        if (!u) {
-          return res.status(404).json({
-            success: false,
-            message: "No account found with this email. Please create an account first.",
-            emailVerified: true,
-            email: cleanEmail
-          });
-        }
-        u.emailVerified = true;
-        await u.save();
-      } else {
-        u = store.users.find(x => String(x.email || "").toLowerCase() === cleanEmail);
-        if (!u) {
-          return res.status(404).json({
-            success: false,
-            message: "No account found with this email. Please create an account first.",
-            emailVerified: true,
-            email: cleanEmail
-          });
-        }
-        u.emailVerified = true;
-        saveStore();
+      u = await User.findOne({ email: cleanEmail });
+      if (!u) {
+        return res.status(404).json({
+          success: false,
+          message: "No account found with this email. Please create an account first.",
+          emailVerified: true,
+          email: cleanEmail
+        });
       }
+      u.emailVerified = true;
+      await u.save();
     }
 
     res.json({
@@ -316,13 +228,7 @@ async function loginWithOtp(req, res) {
 
 async function me(req, res) {
   try {
-    let u = null;
-    if (isMongoConnected()) {
-      u = await User.findById(req.userId);
-    } else {
-      u = store.users.find(x => String(x._id) === String(req.userId));
-    }
-
+    const u = await User.findById(req.userId);
     if (!u) return res.status(404).json({ success: false, message: "User not found" });
     res.json({ success: true, data: safe(u) });
   } catch (err) {
@@ -333,13 +239,7 @@ async function me(req, res) {
 
 async function sendEmailOtp(req, res) {
   try {
-    let u = null;
-    if (isMongoConnected()) {
-      u = await User.findById(req.userId);
-    } else {
-      u = store.users.find(x => String(x._id) === String(req.userId));
-    }
-
+    const u = await User.findById(req.userId);
     const email = (req.body?.email || u?.email || "").toLowerCase().trim();
     if (!email || !EMAIL_REGEX.test(email)) {
       return res.status(400).json({ success: false, message: "A valid email is required to send Twilio verification OTP" });
@@ -365,13 +265,7 @@ async function sendEmailOtp(req, res) {
 
 async function verifyEmailOtp(req, res) {
   try {
-    let u = null;
-    if (isMongoConnected()) {
-      u = await User.findById(req.userId);
-    } else {
-      u = store.users.find(x => String(x._id) === String(req.userId));
-    }
-
+    const u = await User.findById(req.userId);
     const { email, otp } = req.body || {};
     const targetEmail = (email || u?.email || "").toLowerCase().trim();
 
@@ -390,11 +284,7 @@ async function verifyEmailOtp(req, res) {
     if (u) {
       u.email = targetEmail;
       u.emailVerified = true;
-      if (isMongoConnected()) {
-        await u.save();
-      } else {
-        saveStore();
-      }
+      await u.save();
       return res.json({ success: true, message: "Email verified successfully via Twilio! 🎉", data: safe(u), provider: "Twilio" });
     }
 
@@ -407,13 +297,7 @@ async function verifyEmailOtp(req, res) {
 
 async function sendPhoneOtp(req, res) {
   try {
-    let u = null;
-    if (isMongoConnected()) {
-      u = await User.findById(req.userId);
-    } else {
-      u = store.users.find(x => String(x._id) === String(req.userId));
-    }
-
+    const u = await User.findById(req.userId);
     const rawPhone = String(req.body?.phone || u?.phone || "").trim();
     const digitsOnly = rawPhone.replace(/[^0-9]/g, "");
 
@@ -428,11 +312,7 @@ async function sendPhoneOtp(req, res) {
 
     if (u) {
       u.phone = rawPhone;
-      if (isMongoConnected()) {
-        await u.save();
-      } else {
-        saveStore();
-      }
+      await u.save();
     }
 
     res.json({
@@ -451,13 +331,7 @@ async function sendPhoneOtp(req, res) {
 
 async function verifyPhoneOtp(req, res) {
   try {
-    let u = null;
-    if (isMongoConnected()) {
-      u = await User.findById(req.userId);
-    } else {
-      u = store.users.find(x => String(x._id) === String(req.userId));
-    }
-
+    const u = await User.findById(req.userId);
     const { phone, otp } = req.body || {};
     const rawPhone = String(phone || u?.phone || "").trim();
     const digitsOnly = rawPhone.replace(/[^0-9]/g, "");
@@ -475,11 +349,7 @@ async function verifyPhoneOtp(req, res) {
     if (u) {
       u.phone = rawPhone;
       u.phoneVerified = true;
-      if (isMongoConnected()) {
-        await u.save();
-      } else {
-        saveStore();
-      }
+      await u.save();
       return res.json({ success: true, message: "Phone verified successfully via MSG91! 🎉", data: safe(u), provider: "MSG91" });
     }
 
@@ -492,46 +362,21 @@ async function verifyPhoneOtp(req, res) {
 
 async function guest(req, res) {
   try {
-    let u = null;
-
-    if (isMongoConnected()) {
-      // Find existing demo user
-      u = await User.findOne({ username: 'ecowarrior' }) || await User.findOne({ isDemo: true }) || await User.findOne();
-      if (!u) {
-        // Create an initial guest user in MongoDB if completely empty
-        const defaultPassword = await bcrypt.hash('Guest@Eco2025', 10);
-        u = await User.create({
-          _id: randomUUID(),
-          name: "Eco Champion",
-          username: "ecochampion",
-          email: "eco@fysisteps.org",
-          password: defaultPassword,
-          ecoCoins: 120,
-          points: 180,
-          impact: { trees: 3, cleanups: 5, wasteKg: 20, waterLitres: 350 },
-          verifiedActivities: 5,
-          isDemo: true
-        });
-      }
-    } else {
-      u = store.users.find(x => x.username === 'ecowarrior') || store.users[0];
-      if (!u) {
-        u = {
-          _id: randomUUID(),
-          name: "Eco Champion",
-          username: "ecochampion",
-          email: "eco@fysisteps.org",
-          password: await bcrypt.hash('Guest@Eco2025', 10),
-          ecoCoins: 120,
-          points: 180,
-          verifiedActivities: 5,
-          impact: { trees: 3, cleanups: 5, wasteKg: 20, waterLitres: 350 },
-          createdAt: new Date(),
-          isDemo: true
-        };
-        store.users.push(u);
-        saveStore();
-      }
+    let u = await User.findOne({ username: 'ecowarrior' }) || await User.findOne({ isDemo: true }) || await User.findOne();
+    if (!u) {
+      const defaultPassword = await bcrypt.hash('Guest@Eco2025', 10);
+      u = await User.create({
+        _id: randomUUID(),
+        name: "Eco Champion",
+        username: "ecochampion",
+        email: "eco@fysisteps.org",
+        password: defaultPassword,
+        ecoCoins: 120,
+        points: 180,
+        impact: { trees: 3, cleanups: 5, wasteKg: 20, waterLitres: 350 },
+        verifiedActivities: 5,
+        isDemo: true
+      });
     }
 
     return res.json({ success: true, token: token(u), user: safe(u) });

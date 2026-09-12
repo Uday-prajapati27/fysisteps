@@ -25,16 +25,18 @@ async function startServer() {
 
   // 1. Establish database connection before starting services
   console.log("[FysiSteps] Initializing database layer...");
-  const mongoConnected = await connectDB();
-
-  if (mongoConnected && isMongoConnected()) {
-    console.log("✓ [FysiSteps] MongoDB Atlas connected. Operating in persistent database mode.");
-  } else {
-    if (process.env.NODE_ENV === "production" && process.env.MONGODB_URI) {
-      console.error("FATAL: MongoDB connection failed in production with MONGODB_URI set.");
+  try {
+    const mongoConnected = await connectDB();
+    if (mongoConnected && isMongoConnected()) {
+      console.log("✓ [FysiSteps] MongoDB Atlas connected. Operating in persistent database mode.");
     } else {
-      console.warn("ℹ [FysiSteps] MongoDB is not active. Operating with local development fallback storage.");
-      console.warn("  Set MONGODB_URI in your environment to enable persistent MongoDB Atlas storage.");
+      console.warn("⚠️  [FysiSteps] MONGODB_URI not configured. Please supply MONGODB_URI in your .env file.");
+    }
+  } catch (dbErr: any) {
+    console.error("🚨 [FysiSteps] Fatal Database Error on startup:", dbErr.message);
+    if (process.env.NODE_ENV === "production" || process.env.MONGODB_URI) {
+      console.error("Exiting process due to database connection failure when MONGODB_URI was configured.");
+      process.exit(1);
     }
   }
 
@@ -56,7 +58,8 @@ async function startServer() {
     res.json({
       status: "ok",
       service: "FysiSteps API",
-      database: isMongoConnected() ? "mongodb" : "local_fallback",
+      database: isMongoConnected() ? "connected" : "disconnected",
+      mongoConfigured: Boolean(process.env.MONGODB_URI),
       environment: process.env.NODE_ENV || "development"
     });
   });
@@ -113,6 +116,15 @@ async function startServer() {
   app.post("/api/ai/scan", aiController.scanItem);
   app.post("/api/ai/verify", aiController.verifyActivityAI);
   app.get("/api/ai/forecast", auth, aiController.getMLForecast);
+
+  // Global API error handler for database/unhandled errors
+  app.use("/api", (err: any, req: any, res: any, next: any) => {
+    console.error("API error caught:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message || "An unexpected server error occurred."
+    });
+  });
 
   // Vite middleware for development vs static production serving
   if (process.env.NODE_ENV !== "production") {

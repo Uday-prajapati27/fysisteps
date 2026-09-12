@@ -11,9 +11,10 @@ FysiSteps uses **MongoDB Atlas** via **Mongoose** as its persistent production d
 ### Key Architectural Highlights
 - **Full Model Coverage**: Dedicated Mongoose models for `User`, `Activity`, `Reward`, `Organization`, `Redemption`, `Order`, and `Event`.
 - **String UUID Compatibility**: All models use UUID string identifiers (`_id: { type: String, default: () => randomUUID() }`) matching existing route parameters and client state.
-- **Fail-Fast Safety**: Connection attempts use a 5-second timeout and `bufferCommands: false` to avoid hanging indefinitely if credentials or network rules are misconfigured.
+- **Authoritative Database**: MongoDB Atlas is the single authoritative persistent storage engine for all users, activities, organizations, rewards, redemptions, and orders.
+- **Explicit Migration**: Historical records can be imported once using `npm run migrate:data`.
+- **Fail-Fast Reliability**: Connection attempts use a 5-second timeout and `bufferCommands: false` to immediately catch credential or network issues without silent data loss.
 - **Explicit Seeding**: Demo data is never automatically re-seeded on server startup; seeding is invoked explicitly via `npm run seed`.
-- **Zero-Downtime Fallback**: For rapid local UI testing without active credentials, the server smoothly runs with development fallback storage until `MONGODB_URI` is provided.
 
 ---
 
