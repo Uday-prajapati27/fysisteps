@@ -1,4 +1,11 @@
+const dns = require('dns');
 const mongoose = require('mongoose');
+
+// Use reliable public DNS for MongoDB Atlas SRV resolution.
+// This is needed for some local/ISP DNS resolvers that reject MongoDB SRV queries.
+if (process.env.NODE_ENV !== 'production') {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+}
 
 // Fail fast on disconnected operations rather than buffering commands indefinitely
 mongoose.set('bufferCommands', false);
@@ -11,7 +18,7 @@ async function connectDB() {
   if (!uri) {
     const errorMsg = 'MONGODB_URI is not set in environment or .env file. Please configure MONGODB_URI to connect to MongoDB Atlas.';
     console.warn('\n==================================================================');
-    console.warn('⚠️  [FysiSteps Database Warning] ' + errorMsg);
+    console.warn('⚠️ [FysiSteps Database Warning] ' + errorMsg);
     console.warn('==================================================================\n');
     isConnected = false;
     return false;
@@ -19,7 +26,7 @@ async function connectDB() {
 
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       autoIndex: true
     });
 
